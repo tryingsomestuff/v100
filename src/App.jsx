@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 
 const NUMBERS = Array.from({ length: 100 }, (_, index) => index + 1);
+const BASE_URL = import.meta.env.BASE_URL;
 
 async function requestState(options = {}) {
-  const response = await fetch(options.method === "POST" ? "/api/votes" : "/api/state", {
+  const response = await fetch(`${BASE_URL}${options.method === "POST" ? "api/votes" : "api/state"}`, {
     credentials: "same-origin",
     cache: "no-store",
     ...options,
@@ -81,7 +82,7 @@ function App() {
   return (
     <main className="page-shell">
       <header className="topbar">
-        <a className="brand" href="/" aria-label="Vote 100, home">
+        <a className="brand" href={BASE_URL} aria-label="Vote 100, home">
           <span className="brand-mark">V<span>100</span></span>
           <span className="brand-name">THE WINNING<br />NUMBER</span>
         </a>

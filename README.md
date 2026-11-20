@@ -23,23 +23,39 @@ Open `http://127.0.0.1:3000`. This single command serves the backend and React t
 
 ## Production and revealing results
 
-```bash
-npm run build
-VOTE_MODE=sondage npm start
-```
-
-To reveal the results, stop the server and restart it:
+Build and start the production server on port `3003`:
 
 ```bash
-VOTE_MODE=resultats npm start
+bash serve.sh vote
 ```
+
+To reveal the results, stop the server and restart it in results mode:
+
+```bash
+bash serve.sh resultat
+```
+
+The script builds the frontend for `/vote100/`, listens on `127.0.0.1:3003`, and enables secure cookies by default. Set `PORT`, `HOST`, or `COOKIE_SECURE` before running it to override those defaults.
+
+For Apache, enable `mod_proxy`, `mod_proxy_http`, and `mod_alias`, then add these directives inside the HTTPS virtual host. The API mapping must precede the general app mapping:
+
+```apache
+RedirectMatch 301 ^/vote100$ /vote100/
+ProxyPreserveHost On
+ProxyPass        /vote100/api/ http://127.0.0.1:3003/api/
+ProxyPassReverse /vote100/api/ http://127.0.0.1:3003/api/
+ProxyPass        /vote100/     http://127.0.0.1:3003/
+ProxyPassReverse /vote100/     http://127.0.0.1:3003/
+```
+
+Reload Apache after enabling the modules and updating the virtual host.
 
 `VOTE_MODE` is read only at startup. The existing configuration values are retained for compatibility: `sondage` means voting, and `resultats` means results. No public button, URL parameter or endpoint can change the mode. While voting is open, the API exposes neither per-number counts nor the winner. In results mode, the server rejects all new votes. Open pages refresh every 10 seconds and when the window regains focus.
 
 ## Configuration
 
 - `VOTE_MODE`: `sondage` (voting, the default) or `resultats` (results).
-- `PORT`: defaults to `3000`.
+- `PORT`: defaults to `3000` when starting the Node server directly; `serve.sh` defaults to `3003`.
 - `HOST`: defaults to `127.0.0.1`; use `0.0.0.0` to listen on the network.
 - `DATABASE_PATH`: SQLite file path; defaults to `data/votes.sqlite` in the project.
 - `COOKIE_SECURE`: defaults to `false` for local HTTP development; set to `true` for an HTTPS site.
