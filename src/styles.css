@@ -285,11 +285,95 @@ h2 {
 }
 
 .cell-count {
-  color: #92978a;
-  font: 400 8px/1 "DM Mono", monospace;
+  color: #73786b;
+  font: 500 10px/1 "DM Mono", monospace;
 }
 
 .winner .cell-count { color: var(--lime); }
+
+.results-grid .number-cell.just-voted {
+  z-index: 2;
+  border-color: #9ab643;
+  animation: cell-pop 360ms ease-out;
+}
+
+@keyframes cell-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); box-shadow: 0 0 0 4px rgba(154, 182, 67, 0.35); }
+  100% { transform: scale(1); }
+}
+
+.replay-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+  color: #74776c;
+  font: 400 11px "DM Mono", monospace;
+}
+
+.replay-progress strong { color: var(--green); font-weight: 500; }
+
+.replay-buttons { display: flex; gap: 6px; }
+
+.replay-button {
+  border: 1px solid #dce5c8;
+  border-radius: 7px;
+  padding: 6px 10px;
+  background: #f1f5e8;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.replay-button:hover { background: #e6eed6; }
+.replay-button:focus-visible {
+  outline: 3px solid #aec650;
+  outline-offset: 2px;
+}
+
+.vote-entry { margin-bottom: 12px; }
+
+.name-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+  color: #666a61;
+  font-size: 11px;
+}
+
+.name-field input {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  border: 1px solid #e3e6dc;
+  border-radius: 7px;
+  padding: 0 10px;
+  background: #fcfcfa;
+  color: var(--ink);
+  font: 400 12px "DM Sans", sans-serif;
+}
+
+.name-field input:focus-visible {
+  outline: 3px solid #aec650;
+  outline-offset: 2px;
+}
+
+.name-field input:disabled { color: #85897e; }
+
+.voter-name {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0 0 8px;
+  color: #85897e;
+  font-size: 11px;
+}
+
+.voter-name strong { color: var(--ink); font-weight: 600; }
 
 .vote-controls {
   display: flex;
@@ -297,7 +381,7 @@ h2 {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 0;
 }
 
 .selection-summary {
@@ -386,10 +470,13 @@ h2 {
 }
 
 .result-title strong {
+  display: block;
   color: var(--green);
-  font: 700 22px/1 "Manrope", sans-serif;
-  letter-spacing: -1px;
+  font: 700 28px/1.15 "Manrope", sans-serif;
+  overflow-wrap: anywhere;
 }
+
+.result-title span { display: block; margin-top: 3px; }
 
 .winner-tag {
   flex-shrink: 0;
@@ -447,14 +534,17 @@ h2 {
     border-radius: 5px;
   }
   .cell-number { font-size: 11px; }
-  .cell-count { font-size: 9px; }
+  .cell-count { font-size: 9.5px; }
+  .vote-entry { margin-bottom: 8px; }
+  .name-field { gap: 8px; font-size: 10px; }
+  .name-field input { height: 34px; }
   .vote-controls { gap: 8px; margin-bottom: 8px; }
   .selection-summary { font-size: 11px; }
   .submit-button { gap: 8px; padding: 8px 10px; }
   .result-banner { margin-top: 6px; min-height: 44px; padding: 6px 8px; gap: 8px; }
   .result-symbol { width: 28px; height: 28px; }
   .result-label { margin-bottom: 2px; }
-  .result-title strong { font-size: 20px; }
+  .result-title strong { font-size: 22px; }
   .page-footer { flex-wrap: wrap; gap: 3px 12px; padding: 4px 2px; font-size: 8px; }
 }
 
@@ -466,5 +556,6 @@ h2 {
   *, *::before, *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
   }
 }

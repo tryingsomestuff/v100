@@ -6,10 +6,14 @@ import { createApp } from "./app.js";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const databasePath = resolve(process.env.DATABASE_PATH ?? `${root}/data/votes.sqlite`);
-const mode = process.env.VOTE_MODE ?? "sondage";
+const mode = process.env.VOTE_MODE ?? "voting";
 const port = Number(process.env.PORT ?? 3000);
+const ipVoteLimit = Number(process.env.IP_VOTE_LIMIT ?? 100);
 if (!Number.isInteger(port) || port < 1 || port > 65535) {
   throw new Error("PORT must be an integer between 1 and 65535.");
+}
+if (!Number.isSafeInteger(ipVoteLimit) || ipVoteLimit < 1) {
+  throw new Error("IP_VOTE_LIMIT must be a positive integer.");
 }
 if (process.env.COOKIE_SECURE && !["true", "false"].includes(process.env.COOKIE_SECURE)) {
   throw new Error("COOKIE_SECURE must be true or false.");
@@ -19,6 +23,7 @@ const { app, close } = createApp({
   databasePath,
   mode,
   secureCookie: process.env.COOKIE_SECURE === "true",
+  ipVoteLimit,
 });
 
 let vite;
@@ -34,7 +39,7 @@ if (process.argv.includes("--dev")) {
 }
 
 const server = app.listen(port, process.env.HOST ?? "127.0.0.1", () => {
-  console.log(`Vote 100 : http://${process.env.HOST ?? "127.0.0.1"}:${port} (mode ${mode})`);
+  console.log(`Vote 100: http://${process.env.HOST ?? "127.0.0.1"}:${port} (mode ${mode})`);
 });
 server.on("error", (error) => {
   console.error("Unable to start the server:", error);

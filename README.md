@@ -32,7 +32,7 @@ bash serve.sh vote
 To reveal the results, stop the server and restart it in results mode:
 
 ```bash
-bash serve.sh resultat
+bash serve.sh results
 ```
 
 The script builds the frontend for `/vote100/`, listens on `127.0.0.1:3003`, and enables secure cookies by default. Set `PORT`, `HOST`, or `COOKIE_SECURE` before running it to override those defaults.
@@ -50,11 +50,14 @@ ProxyPassReverse /vote100/     http://127.0.0.1:3003/
 
 Reload Apache after enabling the modules and updating the virtual host.
 
+To reset the poll, stop the server and run `bash clean.sh`. Confirm by typing `RESET`; all votes and participant names in the configured SQLite database will be deleted. Set `DATABASE_PATH` if the server uses a non-default database file.
+
 `VOTE_MODE` is read only at startup. The existing configuration values are retained for compatibility: `sondage` means voting, and `resultats` means results. No public button, URL parameter or endpoint can change the mode. While voting is open, the API exposes neither per-number counts nor the winner. In results mode, the server rejects all new votes. Open pages refresh every 10 seconds and when the window regains focus.
 
 ## Configuration
 
-- `VOTE_MODE`: `sondage` (voting, the default) or `resultats` (results).
+- `VOTE_MODE`: `voting` (the default) or `results`. The legacy values `sondage` and `resultats` are still accepted.
+- `IP_VOTE_LIMIT`: maximum successful votes from one IP during a 15-minute window; defaults to `10`.
 - `PORT`: defaults to `3000` when starting the Node server directly; `serve.sh` defaults to `3003`.
 - `HOST`: defaults to `127.0.0.1`; use `0.0.0.0` to listen on the network.
 - `DATABASE_PATH`: SQLite file path; defaults to `data/votes.sqlite` in the project.
@@ -66,9 +69,9 @@ Use HTTPS in production. If a reverse proxy terminates HTTPS, forward the origin
 
 ## One vote per cookie
 
-A random `HttpOnly`, `SameSite=Strict` cookie, valid for one year, identifies the browser. An atomic database update enforces one vote per cookie: double clicks, concurrent requests and multiple tabs cannot record a second vote using the same cookie. Without a valid cookie, the API rejects the vote.
+A random `HttpOnly`, `SameSite=Strict` cookie, valid for one year, identifies the browser. A name (up to 40 characters) is required with the vote; it is shown in the results only when that participant wins. An atomic database update enforces one vote per cookie: double clicks, concurrent requests and multiple tabs cannot record a second vote using the same cookie. Without a valid cookie, the API rejects the vote. Existing SQLite databases are upgraded automatically to store names; earlier votes remain valid and appear as Anonymous if one wins.
 
-This does not verify a person's identity: deleting the cookie, switching browsers or using private browsing allows another vote. This is the identification mechanism selected for this site. Votes from the old `localStorage` demonstration are not imported into the shared poll.
+This does not verify a person's identity: deleting the cookie, switching browsers or using private browsing allows another vote. The additional IP rate limit reduces automated voting from a single network, but can affect people sharing that network and can be bypassed by changing networks. The in-memory limit resets when the server restarts. Votes from the old `localStorage` demonstration are not imported into the shared poll.
 
 ## Checks
 
